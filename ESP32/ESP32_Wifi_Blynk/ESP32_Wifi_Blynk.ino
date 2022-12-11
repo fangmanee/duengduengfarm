@@ -40,6 +40,9 @@
 #include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
 
+// Board repo : https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+// BOARD: ESP32-WROOM-DA-Module
+
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
 char auth[] = "TzSKwYR-rLHARZl6yTXF5UgK-vSFUjyw";
@@ -51,8 +54,9 @@ char pass[] = "12345678";
 BlynkTimer timer;
 
 void sendUptime(){
-  Blynk.virtualWrite(V2, millis() / 1000);
-  Serial.println(millis() / 1000);
+  int time =  millis() / 1000;
+  Blynk.virtualWrite(V2,time);
+  //Serial.println(time);
 }
 
 
