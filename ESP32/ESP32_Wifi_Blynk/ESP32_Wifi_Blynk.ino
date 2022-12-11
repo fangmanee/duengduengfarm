@@ -1,73 +1,74 @@
-/*************************************************************
-  Download latest Blynk library here:
-    https://github.com/blynkkk/blynk-library/releases/latest
-
-  Blynk is a platform with iOS and Android apps to control
-  Arduino, Raspberry Pi and the likes over the Internet.
-  You can easily build graphic interfaces for all your
-  projects by simply dragging and dropping widgets.
-
-    Downloads, docs, tutorials: http://www.blynk.cc
-    Sketch generator:           http://examples.blynk.cc
-    Blynk community:            http://community.blynk.cc
-    Follow us:                  http://www.fb.com/blynkapp
-                                http://twitter.com/blynk_app
-
-  Blynk library is licensed under MIT license
-  This example code is in public domain.
-
- *************************************************************
-  This example runs directly on ESP32 chip.
-
-  Note: This requires ESP32 support package:
-    https://github.com/espressif/arduino-esp32
-
-  Please be sure to select the right ESP32 module
-  in the Tools -> Board menu!
-
-  Change WiFi ssid, pass, and Blynk auth token to run :)
-  Feel free to apply it to any other example. It's simple!
- *************************************************************/
-
-/* Comment this out to disable prints and save space */
-#define BLYNK_PRINT Serial
-
-/* Fill-in your Template ID (only if using Blynk.Cloud) */
-//#define BLYNK_TEMPLATE_ID   "TMPLQwo8gNKs"
-
+// Board repo : https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+// BOARD: ESP32-WROOM-DA-Module
 
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
 
-// Board repo : https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
-// BOARD: ESP32-WROOM-DA-Module
+#include <DHT.h>
+#include <DHT_U.h>
 
-// You should get Auth Token in the Blynk App.
-// Go to the Project Settings (nut icon).
+#define DHTPIN 2
+#define DHTTYPE DHT22
+DHT dht(DHTPIN, DHTTYPE);
+
+#define BLYNK_PRINT Serial
+//#define BLYNK_TEMPLATE_ID   "TMPLQwo8gNKs"
+const int potPin = 2;
+float  moiPercentage = 50.0;
+int pMoist = 0;
+const int dry = 4095;
+const int wet = 0;
+int moiture = 0;
+
 char auth[] = "TzSKwYR-rLHARZl6yTXF5UgK-vSFUjyw";
-
-// Your WiFi credentials.
-// Set password to "" for open networks.
 char ssid[] = "Kin Bed&coffee wifi";
 char pass[] = "12345678";
+
 BlynkTimer timer;
 
 void sendUptime(){
   int time =  millis() / 1000;
   Blynk.virtualWrite(V2,time);
-  //Serial.println(time);
+  Serial.println(time);
 }
 
+void dhtSensor(){
+
+  float humidity = dht.readHumidity();
+  float temp = dht.readTemperature();
+//  Serial.printf("[Humidity] read Humidity %f\n", humidity);
+//  Serial.printf("[Temp] read Temp %f\n",temp);
+  Serial.println(humidity);
+  Serial.println(temp);
+  
+}
+
+void moistSensor()
+{
+  //analogReadResolution(12);
+  moiture = analogRead(potPin);
+  pMoist = map(moiture,wet,dry,100,00);
+  Serial.println(moiture);
+  if(pMoist > 0){
+    Blynk.virtualWrite(V10, pMoist);
+   }
+  
+  
+}
 
 void setup()
 {
   // Debug console
-  Serial.begin(9600);
-
+  
+  Serial.begin(115200);
+  pinMode(potPin,INPUT);
   Blynk.begin(auth, ssid, pass, "blynk.cloud", 80);
   Blynk.notify("ESP32-01 Online!");
+  
   timer.setInterval(1000, sendUptime);
+  timer.setInterval(1000, moistSensor);
+  //timer.setInterval(1000, dhtSensor);
 }
 
 void loop()
