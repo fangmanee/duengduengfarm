@@ -10,7 +10,7 @@
 
 #define DHTPIN 2
 #define DHTTYPE DHT22
-DHT dht(DHTPIN, DHTTYPE);
+
 
 #define BLYNK_PRINT Serial
 //#define BLYNK_TEMPLATE_ID   "TMPLQwo8gNKs"
@@ -27,6 +27,8 @@ char pass[] = "12345678";
 
 BlynkTimer timer;
 
+DHT dht(DHTPIN, DHTTYPE);
+
 void sendUptime(){
   int time =  millis() / 1000;
   Blynk.virtualWrite(V2,time);
@@ -34,18 +36,19 @@ void sendUptime(){
 }
 
 void dhtSensor(){
-
+  dht.begin();
   float humidity = dht.readHumidity();
   float temp = dht.readTemperature();
-//  Serial.printf("[Humidity] read Humidity %f\n", humidity);
-//  Serial.printf("[Temp] read Temp %f\n",temp);
-  Serial.println(humidity);
-  Serial.println(temp);
+  Serial.printf("[Humidity] read Humidity %f\n", humidity);
+  Serial.printf("[Temp] read Temp %f\n",temp);
+  Blynk.virtualWrite(V3,humidity);
+  Blynk.virtualWrite(V4,temp);
+  // Serial.println(humidity);
+  // Serial.println(temp);
   
 }
 
-void moistSensor()
-{
+void moistSensor(){
   //analogReadResolution(12);
   moiture = analogRead(potPin);
   pMoist = map(moiture,wet,dry,100,00);
@@ -62,17 +65,46 @@ void setup()
   // Debug console
   
   Serial.begin(115200);
-  pinMode(potPin,INPUT);
+  // pinMode(potPin,INPUT);
   Blynk.begin(auth, ssid, pass, "blynk.cloud", 80);
+  Serial.println("ESP32-01 Online!");
   Blynk.notify("ESP32-01 Online!");
   
   timer.setInterval(1000, sendUptime);
-  timer.setInterval(1000, moistSensor);
-  //timer.setInterval(1000, dhtSensor);
+  // timer.setInterval(3000, moistSensor);
+  timer.setInterval(1000, dhtSensor);
 }
 
-void loop()
-{
+void loop(){
+  // delay(2000);
+  // float h = dht.readHumidity();
+  // // Read temperature as Celsius (the default)
+  // float t = dht.readTemperature();
+  // // Read temperature as Fahrenheit (isFahrenheit = true)
+  // float f = dht.readTemperature(true);
+
+  // // Check if any reads failed and exit early (to try again).
+  // if (isnan(h) || isnan(t) || isnan(f)) {
+  //   Serial.println(F("Failed to read from DHT sensor!"));
+  //   return;
+  // }
+
+  // // Compute heat index in Fahrenheit (the default)
+  // float hif = dht.computeHeatIndex(f, h);
+  // // Compute heat index in Celsius (isFahreheit = false)
+  // float hic = dht.computeHeatIndex(t, h, false);
+
+  // Serial.print(F("Humidity: "));
+  // Serial.print(h);
+  // Serial.print(F("%  Temperature: "));
+  // Serial.print(t);
+  // Serial.print(F("°C "));
+  // Serial.print(f);
+  // Serial.print(F("°F  Heat index: "));
+  // Serial.print(hic);
+  // Serial.print(F("°C "));
+  // Serial.print(hif);
+  // Serial.println(F("°F"));
   Blynk.run();
   timer.run();
 }
