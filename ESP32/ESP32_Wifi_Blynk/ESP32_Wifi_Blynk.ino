@@ -14,6 +14,7 @@
 
 #define BLYNK_PRINT Serial
 //#define BLYNK_TEMPLATE_ID   "TMPLQwo8gNKs"
+
 const int potPin = 2;
 float  moiPercentage = 50.0;
 int pMoist = 0;
@@ -32,7 +33,8 @@ DHT dht(DHTPIN, DHTTYPE);
 void sendUptime(){
   int time =  millis() / 1000;
   Blynk.virtualWrite(V0,time);
-  Serial.println(time);
+//  Serial.println(time);
+  Serial.printf("[Uptime] %d s\n",time);
 }
 
 void dhtSensor(){
