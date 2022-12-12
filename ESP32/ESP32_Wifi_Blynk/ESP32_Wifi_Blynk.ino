@@ -31,7 +31,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 void sendUptime(){
   int time =  millis() / 1000;
-  Blynk.virtualWrite(V2,time);
+  Blynk.virtualWrite(V0,time);
   Serial.println(time);
 }
 
