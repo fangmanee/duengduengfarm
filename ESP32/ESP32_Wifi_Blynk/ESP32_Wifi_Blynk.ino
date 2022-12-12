@@ -15,12 +15,11 @@
 #define BLYNK_PRINT Serial
 //#define BLYNK_TEMPLATE_ID   "TMPLQwo8gNKs"
 
-const int potPin = 2;
-float  moiPercentage = 50.0;
+const int moistPin = 36;
 int pMoist = 0;
 const int dry = 4095;
 const int wet = 0;
-int moiture = 0;
+int moisture = 0;
 
 char auth[] = "TzSKwYR-rLHARZl6yTXF5UgK-vSFUjyw";
 char ssid[] = "Kin Bed&coffee wifi";
@@ -52,11 +51,13 @@ void dhtSensor(){
 
 void moistSensor(){
   //analogReadResolution(12);
-  moiture = analogRead(potPin);
-  pMoist = map(moiture,wet,dry,100,00);
-  Serial.println(moiture);
+  moisture = analogRead(moistPin);
+  pMoist = map(moisture,wet,dry,100,0);
+//  Serial.println(moisture);
+  Serial.printf("[Moisture] read Moist %d\n",moisture);
+  Serial.printf("[Moisture] Calculated pMoist %d\n",pMoist);
   if(pMoist > 0){
-    Blynk.virtualWrite(V10, pMoist);
+    Blynk.virtualWrite(V5, pMoist);
    }
   
   
@@ -73,7 +74,7 @@ void setup()
   Blynk.notify("ESP32-01 Online!");
   
   timer.setInterval(1000, sendUptime);
-  // timer.setInterval(3000, moistSensor);
+  timer.setInterval(1000, moistSensor);
   timer.setInterval(1000, dhtSensor);
 }
 
