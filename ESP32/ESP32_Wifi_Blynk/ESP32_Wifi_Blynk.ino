@@ -8,7 +8,7 @@
 #include <DHT.h>
 #include <DHT_U.h>
 
-#define DHTPIN 2
+#define DHTPIN 15
 #define DHTTYPE DHT22
 
 
@@ -65,7 +65,7 @@ void setup()
   // Debug console
   
   Serial.begin(115200);
-  // pinMode(potPin,INPUT);
+  pinMode(DHTPIN,INPUT);
   Blynk.begin(auth, ssid, pass, "blynk.cloud", 80);
   Serial.println("ESP32-01 Online!");
   Blynk.notify("ESP32-01 Online!");
@@ -76,35 +76,7 @@ void setup()
 }
 
 void loop(){
-  // delay(2000);
-  // float h = dht.readHumidity();
-  // // Read temperature as Celsius (the default)
-  // float t = dht.readTemperature();
-  // // Read temperature as Fahrenheit (isFahrenheit = true)
-  // float f = dht.readTemperature(true);
 
-  // // Check if any reads failed and exit early (to try again).
-  // if (isnan(h) || isnan(t) || isnan(f)) {
-  //   Serial.println(F("Failed to read from DHT sensor!"));
-  //   return;
-  // }
-
-  // // Compute heat index in Fahrenheit (the default)
-  // float hif = dht.computeHeatIndex(f, h);
-  // // Compute heat index in Celsius (isFahreheit = false)
-  // float hic = dht.computeHeatIndex(t, h, false);
-
-  // Serial.print(F("Humidity: "));
-  // Serial.print(h);
-  // Serial.print(F("%  Temperature: "));
-  // Serial.print(t);
-  // Serial.print(F("°C "));
-  // Serial.print(f);
-  // Serial.print(F("°F  Heat index: "));
-  // Serial.print(hic);
-  // Serial.print(F("°C "));
-  // Serial.print(hif);
-  // Serial.println(F("°F"));
   Blynk.run();
   timer.run();
 }
